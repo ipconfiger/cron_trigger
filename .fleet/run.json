@@ -1,0 +1,11 @@
+{
+    "configurations": [
+        {
+            "type": "cargo",
+            "name": "Cargo configuration",
+            "cargoArgs": ["run"],
+            "executableArgs": ["--cron", "$USER_HOME$/Documents/test.cron", "--notifications", "$USER_HOME$/Documents/notify.yml"],
+        },
+        
+    ]
+}
