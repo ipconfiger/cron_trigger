@@ -41,6 +41,7 @@ fn send_mail(config: &Config, to_addr: String, title: String, content: String) {
     // 设置收件人邮箱地址
     let to = to_addr.parse().expect("Invalid target addr");
     // 创建邮件
+    println!("creating mail");
     let email = Message::builder()
         .from(from)
         .to(to)
@@ -54,7 +55,7 @@ fn send_mail(config: &Config, to_addr: String, title: String, content: String) {
     // 设置发件人邮箱账号和密码
     let username = config.account.clone();
     let password = config.pwd.clone();
-    
+    println!("creating smtp transport");
     // 创建SMTP传输对象
     let smtp_transport = SmtpTransport::starttls_relay(smtp_server.as_str())
         .expect("create mail transport error!")
