@@ -25,6 +25,7 @@ jobs:
         with:
           RUSTTARGET: ${{ matrix.target }}
           UPLOAD_MODE: none
+          EXTRA_FILES: README.md install.sh
           
       - name: get version
         id: versions
