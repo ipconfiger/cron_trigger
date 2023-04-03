@@ -133,13 +133,16 @@ fn read_notification_config(config_path: PathBuf) -> Config {
 
 fn send_notification(config_path: PathBuf, title: &str, body: &str) {
     let config = read_notification_config(config_path);
+    println!("load notification configure:{:?}", config);
     for item in &config.nlist {
         let tp = item.item_type.as_str();
         match tp {
             "web" =>{
+                println!("get web hook, http post");
                 send_web(item.address.clone(), body.to_string());
             },
             "mail"=>{
+                println!("get mail hook, send mail");
                 send_mail(&config, item.address.clone(), title.to_string(), body.to_string());
             },
             _=>{}
