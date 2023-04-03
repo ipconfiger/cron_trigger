@@ -3,6 +3,7 @@ use tokio::fs::File;
 use tokio::io::{self, AsyncBufReadExt, BufReader};
 use chrono::{DateTime, Utc};
 use std::str::FromStr;
+use std::panic;
 use std::env;
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -36,9 +37,9 @@ fn send_web(to_addr: String, content: String) {
 
 fn send_mail(config: &Config, to_addr: String, title: String, content: String) {
     // 设置发件人邮箱地址
-    let from = config.from_addr.parse().unwrap();
+    let from = config.from_addr.parse().expect("Invalid from addr");
     // 设置收件人邮箱地址
-    let to = to_addr.parse().unwrap();
+    let to = to_addr.parse().expect("Invalid target addr");
     // 创建邮件
     let email = Message::builder()
         .from(from)
@@ -46,7 +47,7 @@ fn send_mail(config: &Config, to_addr: String, title: String, content: String) {
         .subject(title)
         .header(ContentType::TEXT_PLAIN)
         .body(content)
-        .unwrap();
+        .expect("Invalid mail");
     // 设置SMTP服务器地址和端口号
     let smtp_server = config.smtp.clone();
     let smtp_port = config.smtp_port;
@@ -56,7 +57,7 @@ fn send_mail(config: &Config, to_addr: String, title: String, content: String) {
     
     // 创建SMTP传输对象
     let smtp_transport = SmtpTransport::starttls_relay(smtp_server.as_str())
-        .unwrap()
+        .expect("create mail transport error!")
         .credentials(Credentials::new(username.to_string(), password.to_string()))
         .port(smtp_port).build();
     // 发送邮件
@@ -144,7 +145,12 @@ fn send_notification(config_path: PathBuf, title: &str, body: &str) {
             },
             "mail"=>{
                 println!("get mail hook, send mail");
-                send_mail(&config, item.address.clone(), title.to_string(), body.to_string());
+                let result = panic::catch_unwind(|| {
+                    send_mail(&config, item.address.clone(), title.to_string(), body.to_string());
+                });
+                if let Err(err) = result {
+                    println!("Caught a panic: {:?}", err);
+                }
             },
             _=>{}
         }
