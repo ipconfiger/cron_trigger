@@ -63,7 +63,7 @@ fn send_mail(config: &Config, to_addr: String, title: String, content: String) {
     let result = smtp_transport.send(&email);
     match result {
         Ok(_) => println!("Email sent successfully!"),
-        Err(e) => panic!("Could not send email: {e:?}"),
+        Err(e) => println!("Could not send email: {e:?}"),
     }
 }
 
