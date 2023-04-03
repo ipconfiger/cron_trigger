@@ -60,6 +60,7 @@ fn send_mail(config: &Config, to_addr: String, title: String, content: String) {
     let smtp_result = SmtpTransport::starttls_relay(smtp_server.as_str());
     match smtp_result {
         Ok(smtp_transport)=>{
+            println!("creating smtp transport ok!");
             let transport = smtp_transport.credentials(Credentials::new(username.to_string(), password.to_string()))
             .port(smtp_port)
             .build();
@@ -69,10 +70,9 @@ fn send_mail(config: &Config, to_addr: String, title: String, content: String) {
                 Ok(_) => println!("Email sent successfully!"),
                 Err(e) => println!("Could not send email: {e:?}"),
             }
-
         }
         Err(ex)=>{
-            println!("create transport faild with err:{ex:?}");
+            println!("create transport faild with err:{:?}", ex);
         }
     };
 }
