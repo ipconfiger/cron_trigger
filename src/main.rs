@@ -60,6 +60,7 @@ fn send_mail(config: &Config, to_addr: String, title: String, content: String) {
         .credentials(Credentials::new(username.to_string(), password.to_string()))
         .port(smtp_port).build();
     // 发送邮件
+    println!("will send mail to:{}", to_addr);
     let result = smtp_transport.send(&email);
     match result {
         Ok(_) => println!("Email sent successfully!"),
@@ -86,7 +87,7 @@ async fn task_that_takes_a_second(config_path: PathBuf, notify_path: PathBuf) {
                     },
                     Err(ex)=>{
                         let notification_body = format!("cmd:{} with Err:{}", command, ex);
-                        println!("will send:{}", notification_body);
+                        // println!("will send:{}", notification_body);
                         send_notification(notify_path, "Test Alarm", notification_body.as_str());
                     }
                 }
