@@ -57,17 +57,24 @@ fn send_mail(config: &Config, to_addr: String, title: String, content: String) {
     let password = config.pwd.clone();
     println!("creating smtp transport");
     // 创建SMTP传输对象
-    let smtp_transport = SmtpTransport::starttls_relay(smtp_server.as_str())
-        .expect("create mail transport error!")
-        .credentials(Credentials::new(username.to_string(), password.to_string()))
-        .port(smtp_port).build();
-    // 发送邮件
-    println!("will send mail to:{}", to_addr);
-    let result = smtp_transport.send(&email);
-    match result {
-        Ok(_) => println!("Email sent successfully!"),
-        Err(e) => println!("Could not send email: {e:?}"),
-    }
+    let smtp_result = SmtpTransport::starttls_relay(smtp_server.as_str());
+    match smtp_result {
+        Ok(smtp_transport)=>{
+            let transport = smtp_transport.credentials(Credentials::new(username.to_string(), password.to_string()))
+            .port(smtp_port)
+            .build();
+            println!("will send mail to:{}", to_addr);
+            let result = transport.send(&email);
+            match result {
+                Ok(_) => println!("Email sent successfully!"),
+                Err(e) => println!("Could not send email: {e:?}"),
+            }
+
+        }
+        Err(ex)=>{
+            println!("create transport faild with err:{ex:?}");
+        }
+    };
 }
 
 
