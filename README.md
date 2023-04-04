@@ -39,7 +39,8 @@ nlist:
     address: "http://127.0.0.1:8878/send/sms"
 ```
 
-
+## 带解决问题 ISSUSE
+lettre库在使用target=x86_64-unknown-linux-musl 编译后，运行到starttls_relay的时候会panic
 
 
 
