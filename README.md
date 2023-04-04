@@ -32,6 +32,7 @@ smtp_port: 25
 from_addr: "xxx@yyy.com"
 account: "xxx@yyy.com"
 pwd: "*********"
+starttls: false
 nlist:
   - item_type: "mail"
     address: "23826299@qq.com"
