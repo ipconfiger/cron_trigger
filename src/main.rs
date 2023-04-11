@@ -230,7 +230,7 @@ async fn read_crontab_file(config_path: PathBuf, tasks: &mut Vec<String>) -> io:
                     println!("执行命令:{}", command);
                     tasks.push(command);
                 }else{
-                    println!("cron:{} next:{}, current:{}", time_config, next_ts, now_ts);
+                    //println!("cron:{} next:{}, current:{}", time_config, next_ts, now_ts);
                 }
             }
         }
