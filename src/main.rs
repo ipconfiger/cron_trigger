@@ -1,7 +1,7 @@
 use tokio::time;
 use tokio::fs::File;
 use tokio::io::{self, AsyncBufReadExt, BufReader};
-use chrono::{DateTime, Utc};
+use chrono::{DateTime, Utc, Local};
 use std::str::FromStr;
 use std::panic;
 use std::{env, time::Duration};
@@ -202,7 +202,7 @@ async fn main() {
     let notify_path = get_abs_path(&notify_uri.to_string());
     
     
-    eprintln!("file path:{:?}", file_path);
+    println!("file path:{:?}", file_path);
     let mut interval = time::interval(time::Duration::from_secs(1));
     loop {
         interval.tick().await;
@@ -216,14 +216,21 @@ async fn read_crontab_file(config_path: PathBuf, tasks: &mut Vec<String>) -> io:
     let now: DateTime<Utc> = Utc::now();
     let mut lines = reader.lines();
     while let Some(line) = lines.next_line().await? {
+        if line.starts_with("#"){
+            continue;
+        }
         let time_config = line.split_whitespace().take(7).collect::<Vec<_>>().join(" ");
+        let command = line.split_whitespace().skip(7).collect::<Vec<_>>().join(" ");
         if let Ok(cron) = cron::Schedule::from_str(&time_config) {
-            if let Some(next) = cron.upcoming(Utc).next() {
-                if (next.timestamp() - 1) == now.timestamp() {
-                    let command = line.split_whitespace().skip(7).collect::<Vec<_>>().join(" ");
+            if let Some(next) = cron.upcoming(Local).next() {
+                let next_ts = next.timestamp() - 1;
+                let now_ts = now.timestamp();
+                if next_ts == now_ts {
                     // execute command
                     println!("执行命令:{}", command);
                     tasks.push(command);
+                }else{
+                    println!("cron:{} next:{}, current:{}", time_config, next_ts, now_ts);
                 }
             }
         }

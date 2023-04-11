@@ -4,7 +4,7 @@
             "type": "cargo",
             "name": "Cargo configuration",
             "cargoArgs": ["run"],
-            "executableArgs": ["--cron", "$USER_HOME$/Documents/test.cron", "--notifications", "$USER_HOME$/Documents/notify.yml"],
+            "executableArgs": ["--cron", "$USER_HOME$/Downloads/test_cron.txt", "--notifications", "$USER_HOME$/Documents/notify.yml"],
         },
         
     ]
