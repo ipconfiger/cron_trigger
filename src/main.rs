@@ -97,7 +97,7 @@ async fn task_that_takes_a_second(config_path: PathBuf, notify_path: PathBuf) {
                     .args(&args[1..])
                     .output();
                 match result {
-                    Ok(output)=>{
+                    Ok(_output)=>{
                         println!("No problem!")
                     },
                     Err(ex)=>{
