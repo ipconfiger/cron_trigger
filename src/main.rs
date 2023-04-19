@@ -7,6 +7,7 @@ use std::panic;
 use std::{env, time::Duration};
 use std::path::{Path, PathBuf};
 use std::process::Command;
+use std::process::ExitStatus;
 use std::thread;
 use lettre::{Message, SmtpTransport, Transport};
 use lettre::message::header::ContentType;
@@ -97,8 +98,17 @@ async fn task_that_takes_a_second(config_path: PathBuf, notify_path: PathBuf) {
                     .args(&args[1..])
                     .output();
                 match result {
-                    Ok(_output)=>{
-                        println!("No problem!")
+                    Ok(output)=>{
+                        println!("exec with status:{}", output.status);
+                        if let Some(code) = output.status.code(){
+                            if code > 0{
+                                let error = String::from_utf8(output.stderr).unwrap();
+                                println!("error:{}", error);
+                                send_notification(notify_path, "Test Alarm", format!("cmd:{:?}\nerror:{:?}", args[0], error).as_str());
+                            }else{
+                                println!("output:{}", String::from_utf8(output.stdout).unwrap());
+                            }
+                        }
                     },
                     Err(ex)=>{
                         let notification_body = format!("cmd:{} with Err:{}", command, ex);
