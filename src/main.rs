@@ -104,14 +104,14 @@ async fn task_that_takes_a_second(config_path: PathBuf, notify_path: PathBuf) {
                             if code > 0{
                                 let error = String::from_utf8(output.stderr).unwrap();
                                 println!("error:{}", error);
-                                send_notification(notify_path, "Test Alarm", format!("cmd:{:?}\nerror:{:?}", args[0], error).as_str());
+                                send_notification(notify_path, "Test Alarm", format!("cmd:{:?}\nerror:{:?}", args, error).as_str());
                             }else{
                                 println!("output:{}", String::from_utf8(output.stdout).unwrap());
                             }
                         }
                     },
                     Err(ex)=>{
-                        let notification_body = format!("cmd:{} with Err:{}", command, ex);
+                        let notification_body = format!("cmd:{:?} with Err:{}", args, ex);
                         // println!("will send:{}", notification_body);
                         send_notification(notify_path, "Test Alarm", notification_body.as_str());
                     }
