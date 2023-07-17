@@ -94,26 +94,19 @@ async fn task_that_takes_a_second(config_path: PathBuf, notify_path: PathBuf) {
             let notify_path = notify_path.clone();
             thread::spawn(move || {
                 let args: Vec<&str> = command.split_whitespace().collect();
-                let result = Command::new(args[0])
+                let output = Command::new(args[0])
                     .args(&args[1..])
-                    .output();
-                match result {
-                    Ok(output)=>{
-                        println!("exec with status:{}", output.status);
-                        if let Some(code) = output.status.code(){
-                            if code > 0{
-                                let error = String::from_utf8(output.stderr).unwrap();
-                                println!("error:{}", error);
-                                send_notification(notify_path, "Test Alarm", format!("cmd:{:?}\nerror:{:?}", args, error).as_str());
-                            }else{
-                                println!("output:{}", String::from_utf8(output.stdout).unwrap());
-                            }
-                        }
-                    },
-                    Err(ex)=>{
-                        let notification_body = format!("cmd:{:?} with Err:{}", args, ex);
-                        // println!("will send:{}", notification_body);
-                        send_notification(notify_path, "Test Alarm", notification_body.as_str());
+                    .output().expect("Run faild");
+
+                println!("exec with status:{}", output.status);
+                if let Some(code) = output.status.code(){
+                    if code > 0{
+                        let error = String::from_utf8_lossy(&output.stdout);
+                        println!("error:{}", error);
+                        let converted = format!("{}", error.replace("\n", "<br>"));
+                        send_notification(notify_path, "Test Alarm", format!("执行指令:{:?}<br>报错信息:<br>{}", args, converted).as_str());
+                    }else{
+                        println!("output:{}", String::from_utf8(output.stdout).unwrap());
                     }
                 }
                 
